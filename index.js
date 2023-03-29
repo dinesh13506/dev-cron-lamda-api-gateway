@@ -1,30 +1,38 @@
-export const handler = async(event) => {
-    console.log(event.body);
-    const TASKS = {
-        SAYHELLO : "sayhello"
+console.log('Loading function');
+
+exports.handler = async (event, context) => {
+    console.log('Received event:', JSON.stringify(event, null, 2));
+    let headers = event.headers;
+    if(typeof headers == 'string') {
+        headers = JSON.parse(headers);
     }
     let body = event.body;
-    try { body = JSON.parse(event.body) } catch(e) { console.error(e)};
-    let task_name = body.task_name || "";
-    let task_data = body.task_data || {};
-    switch(task_name) {
-        case TASKS.SAYHELLO :
-            return sayHello(task_data);
+    if(typeof body == 'string') {
+        body = JSON.parse(body);
+    };
+    
+    let task_name = body.task_name || '';
+    let task_data = body.task_data || '';
+    switch (task_name) {
+        case 'sayhello':
+            return sayhello(task_data);
+            break;
+        
         default:
-            return {
+           let response = {
                 statusCode: 404,
                 body: JSON.stringify({
-                    "message" : `task  ${task_name} not found`
+                    "message" : `Task ${task_name} not found`
                 })
-            }
+            };
+            return response;
     }
 };
 
 
-
-let sayHello = (task_data) => {
-    let name = task_data.name || "";
-    const response = {
+let sayhello = (task_data) => {
+    let name = task_data.name;
+    let response = {
         statusCode: 200,
         body: JSON.stringify({
             "message" : `Hello ${name}`
@@ -32,3 +40,4 @@ let sayHello = (task_data) => {
     };
     return response;
 }
+ 
